@@ -89,7 +89,7 @@ def get_print_fn_args(results, niter, ncall, add_live_it=None,
     # Extract results at the current iteration.
     (worst, ustar, vstar, loglstar, logvol, logwt,
      logz, logzvar, h, nc, worst_it, boundidx, bounditer,
-     eff, delta_logz) = results
+     eff, delta_logz, blob) = results
 
     # Adjusting outputs for printing.
     if delta_logz > 1e6:
@@ -131,6 +131,15 @@ def get_print_fn_args(results, niter, ncall, add_live_it=None,
     else:
         long_str.append("stop: {:6.3f}".format(stop_val))
         mid_str.append("stop: {:6.3f}".format(stop_val))
+
+    if blob is not None:
+        long_str.append("act: {:6.3f}".format(blob["act"]))
+        long_str.append("accept: {:d}".format(blob["accept"]))
+        long_str.append("reject: {:d}".format(blob["reject"]))
+        long_str.append("fail: {:d}".format(blob["fail"]))
+        long_str.append("scale: {:6.3f}".format(blob["scale"]))
+        long_str.append("stagger: {:6.3f}".format(blob["stagger"]))
+        long_str.append("facc: {:6.3f}".format(blob["facc"]))
 
     return niter, short_str, mid_str, long_str
 

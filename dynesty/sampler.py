@@ -385,7 +385,7 @@ class Sampler(object):
                 nupdate += 1
                 self.since_update = -ncall  # ncall will be added back later
 
-        return u, v, logl, ncall
+        return u, v, logl, ncall, blob
 
     def add_live_points(self):
         """Add the remaining set of live points to the current set of dead
@@ -481,7 +481,7 @@ class Sampler(object):
             # Return our new "dead" point and ancillary quantities.
             yield (idx, ustar, vstar, loglstar, logvol, logwt,
                    logz, logzvar, h, 1, point_it, boundidx, bounditer,
-                   self.eff, delta_logz)
+                   self.eff, delta_logz, None)
 
     def _remove_live_points(self):
         """Remove the final set of live points if they were
@@ -759,7 +759,7 @@ class Sampler(object):
             # Sample a new live point from within the likelihood constraint
             # `logl > loglstar` using the bounding distribution and sampling
             # method from our sampler.
-            u, v, logl, nc = self._new_point(loglstar_new, logvol)
+            u, v, logl, nc, blob = self._new_point(loglstar_new, logvol)
             ncall += nc
             self.ncall += nc
             self.since_update += nc
@@ -816,7 +816,7 @@ class Sampler(object):
             # Return dead point and ancillary quantities.
             yield (worst, ustar, vstar, loglstar, logvol, logwt,
                    logz, logzvar, h, nc, worst_it, boundidx, bounditer,
-                   self.eff, delta_logz)
+                   self.eff, delta_logz, blob)
 
     def _get_print_func(self, print_func, print_progress):
         pbar = None
@@ -908,7 +908,7 @@ class Sampler(object):
                                                      add_live=add_live)):
                 (worst, ustar, vstar, loglstar, logvol, logwt,
                  logz, logzvar, h, nc, worst_it, boundidx, bounditer,
-                 eff, delta_logz) = results
+                 eff, delta_logz, blob) = results
                 ncall += nc
                 if delta_logz > 1e6:
                     delta_logz = np.inf
@@ -927,7 +927,7 @@ class Sampler(object):
                 for i, results in enumerate(self.add_live_points()):
                     (worst, ustar, vstar, loglstar, logvol, logwt,
                      logz, logzvar, h, nc, worst_it, boundidx, bounditer,
-                     eff, delta_logz) = results
+                     eff, delta_logz, blob) = results
                     if delta_logz > 1e6:
                         delta_logz = np.inf
                     if logz <= -1e6:
